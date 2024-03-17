@@ -35,7 +35,7 @@ public sealed partial class TelepathySystem : EntitySystem
     {
     AddAdminVerbs(ev);
     }
-
+/// Ещё не урезанная версия
     private void AddAdminVerbs(GetVerbsEvent<Verb> args)
     {
         if (!EntityManager.TryGetComponent(args.User, out ActorComponent? actor))
@@ -69,4 +69,3 @@ public sealed partial class TelepathySystem : EntitySystem
         }
     }
 }
-
