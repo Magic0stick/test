@@ -1,13 +1,6 @@
-using Content.Server.Administration.Systems;
-using static Content.Server.Administration.QuickDialogSystem;
 using Content.Server.Revenant.Components;
-using Content.Server.Popups;
-using Content.Shared.Inventory;
 using Content.Shared.Verbs;
-using Content.Server.EUI;
 using Robust.Shared.Player;
-using Robust.Shared.Toolshed;
-using System.Linq;
 using Content.Server.Administration;
 using Content.Server.Prayer;
 
@@ -15,12 +8,6 @@ namespace Content.Server.Revenant;
 
 public sealed partial class TelepathySystem : EntitySystem
 {
-    [Dependency] private readonly InventorySystem _invSystem = default!;
-    [Dependency] private readonly ToolshedManager _toolshed = default!;
-    [Dependency] private readonly PopupSystem _popupSystem = default!;
-    [Dependency] private readonly SharedTransformSystem _transform = default!;
-    [Dependency] private readonly EuiManager _euiManager = default!;
-    [Dependency] private readonly AdminSystem _adminSystem = default!;
     [Dependency] private readonly QuickDialogSystem _quickDialog = default!;
     [Dependency] private readonly PrayerSystem _prayerSystem = default!;
 
@@ -31,10 +18,10 @@ public sealed partial class TelepathySystem : EntitySystem
 
     private void GetVerbs(GetVerbsEvent<Verb> ev)
     {
-    AddAdminVerbs(ev);
+    AddRevenantVerbs(ev);
     }
 
-    private void AddAdminVerbs(GetVerbsEvent<Verb> args)
+    private void AddRevenantVerbs(GetVerbsEvent<Verb> args)
     {
         if (!EntityManager.TryGetComponent(args.User, out ActorComponent? actor))
             return;
@@ -43,28 +30,25 @@ public sealed partial class TelepathySystem : EntitySystem
 
         if (!HasComp<EssenceComponent>(args.User))
         {
-            Verb mark = new();
-            mark.Text = Loc.GetString("toolshed-verb-mark");
-            mark.Message = Loc.GetString("toolshed-verb-mark-description");
-            mark.Category = VerbCategory.Admin;
-            mark.Act = () => _toolshed.InvokeCommand(player, "=> $marked", Enumerable.Repeat(args.Target, 1), out _);
-            args.Verbs.Add(mark);
 
             if (TryComp(args.Target, out ActorComponent? targetActor))
             {
                 // Subtle Messages
-                Verb prayerVerb = new();
-                prayerVerb.Text = Loc.GetString("prayer-verbs-subtle-message");
-                prayerVerb.Category = VerbCategory.Admin;
-                prayerVerb.Act = () =>
+                Verb telepathy = new();
+                telepathy.Text = Loc.GetString("Пробратся в мысли");
+                telepathy.Priority = -3;
+                telepathy.DoContactInteraction = true;
+                telepathy.Act = () =>
                 {
-                    _quickDialog.OpenDialog(player, "Subtle Message", "Message", "Popup Message", (string message, string popupMessage) =>
+                    _quickDialog.OpenDialog(player, "Subtle Message", "Message", (string message) =>
                 {
-                    _prayerSystem.SendSubtleMessage(targetActor.PlayerSession, player, message, popupMessage == "" ? Loc.GetString("prayer-popup-subtle-default") : popupMessage);
+                    _prayerSystem.SendSubtleMessage(targetActor.PlayerSession, player, message, "Вы слышите загадочный голос в своей голове" == "" ? Loc.GetString("prayer-popup-subtle-default") : "Вы слышите загадочный голос в своей голове");
                 });
                 };
+                args.Verbs.Add(telepathy);
             }
         }
     }
 }
+
 
