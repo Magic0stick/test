@@ -1,20 +1,17 @@
-using Content.Server.Administration;
+using Content.Server.Administration.Systems;
+using static Content.Server.Administration.QuickDialogSystem;
 using Content.Server.Revenant.Components;
 using Content.Server.Popups;
-using Content.Shared.IdentityManagement;
-using Content.Shared.Interaction;
 using Content.Shared.Inventory;
-using Content.Shared.Popups;
-using Content.Shared.Timing;
 using Content.Shared.Verbs;
 using Content.Server.EUI;
-using Content.Shared.Revenant.Components;
-
-
 using Robust.Shared.Player;
 using Robust.Shared.Toolshed;
+using System.Linq;
+using Content.Server.Administration;
+using Content.Server.Prayer;
 
-namespace Content.Client.Revenant;
+namespace Content.Server.Revenant;
 
 public sealed partial class TelepathySystem : EntitySystem
 {
@@ -22,9 +19,10 @@ public sealed partial class TelepathySystem : EntitySystem
     [Dependency] private readonly ToolshedManager _toolshed = default!;
     [Dependency] private readonly PopupSystem _popupSystem = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
-
     [Dependency] private readonly EuiManager _euiManager = default!;
-
+    [Dependency] private readonly AdminSystem _adminSystem = default!;
+    [Dependency] private readonly QuickDialogSystem _quickDialog = default!;
+    [Dependency] private readonly PrayerSystem _prayerSystem = default!;
 
     public override void Initialize()
     {
@@ -35,7 +33,7 @@ public sealed partial class TelepathySystem : EntitySystem
     {
     AddAdminVerbs(ev);
     }
-/// Ещё не урезанная версия
+
     private void AddAdminVerbs(GetVerbsEvent<Verb> args)
     {
         if (!EntityManager.TryGetComponent(args.User, out ActorComponent? actor))
@@ -69,3 +67,4 @@ public sealed partial class TelepathySystem : EntitySystem
         }
     }
 }
+
