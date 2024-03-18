@@ -40,7 +40,7 @@ public sealed partial class TelepathySystem : EntitySystem
                 telepathy.DoContactInteraction = true;
                 telepathy.Act = () =>
                 {
-                    _quickDialog.OpenDialog(player, "Subtle Message", "Message", (string message) =>
+                    _quickDialog.OpenDialog(player, "Пробратся в мысли", "Сообщение", (string message) =>
                 {
                     _prayerSystem.SendSubtleMessage(targetActor.PlayerSession, player, message, "Вы слышите загадочный голос в своей голове" == "" ? Loc.GetString("prayer-popup-subtle-default") : "Вы слышите загадочный голос в своей голове");
                 });
